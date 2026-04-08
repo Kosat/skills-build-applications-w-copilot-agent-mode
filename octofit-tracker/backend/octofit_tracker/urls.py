@@ -38,7 +38,23 @@ router.register(r'leaderboard', LeaderboardViewSet)
 
 
 def api_root(request):
-    return JsonResponse({"message": "OctoFit Tracker API", "base_url": base_url})
+    # Dynamically determine the base_url for Codespaces or localhost
+    codespace_name = os.environ.get('CODESPACE_NAME')
+    if codespace_name:
+        base_url = f"https://{codespace_name}-8000.app.github.dev"
+    else:
+        base_url = "http://localhost:8000"
+    return JsonResponse({
+        "message": "OctoFit Tracker API",
+        "base_url": base_url,
+        "endpoints": {
+            "users": f"{base_url}/api/users/",
+            "teams": f"{base_url}/api/teams/",
+            "activities": f"{base_url}/api/activities/",
+            "workouts": f"{base_url}/api/workouts/",
+            "leaderboard": f"{base_url}/api/leaderboard/"
+        }
+    })
 
 urlpatterns = [
     path('', api_root, name='root'),
